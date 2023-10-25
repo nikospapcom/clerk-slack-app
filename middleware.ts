@@ -8,7 +8,9 @@ const publicRoutesThatShouldRedirectAfterAuth = ["/"];
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 export default authMiddleware({
   afterAuth: async (auth, req) => {
-    const organizations = await clerkClient.organizations.getOrganizationList();
+    if (!auth.userId && req.nextUrl.pathname.includes("/app")) {
+      return NextResponse.redirect(new URL("/sign-in", req.url));
+    }
 
     if (
       auth.userId &&
@@ -17,18 +19,17 @@ export default authMiddleware({
       return NextResponse.redirect(new URL("/app", req.url));
     }
 
-    if (!auth.userId && req.nextUrl.pathname.includes("/app")) {
-      return NextResponse.redirect(new URL("/sign-in", req.url));
+    if (auth.userId) {
+      const user = await clerkClient.users.getUser(auth.userId);
+      console.log(user);
     }
 
     if (
-      !organizations.length &&
+      !auth.orgId &&
       req.nextUrl.pathname !== "/sign-in" &&
-      req.nextUrl.pathname !== "/app/create-organization"
+      req.nextUrl.pathname !== "/app/pick-organization"
     ) {
-      return NextResponse.redirect(
-        new URL("/app/create-organization", req.url)
-      );
+      return NextResponse.redirect(new URL("/app/pick-organization", req.url));
     }
 
     return NextResponse.next();

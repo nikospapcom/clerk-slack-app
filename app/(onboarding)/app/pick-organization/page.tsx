@@ -7,6 +7,7 @@ export default function Page() {
         <OrganizationList
           afterSelectPersonalUrl="/"
           afterSelectOrganizationUrl="/"
+          hidePersonal
         />
       </div>
     </div>
