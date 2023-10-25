@@ -27,6 +27,7 @@ export default authMiddleware({
     if (
       !auth.orgId &&
       req.nextUrl.pathname !== "/sign-in" &&
+      req.nextUrl.pathname !== "/sign-up" &&
       req.nextUrl.pathname !== "/app/pick-organization"
     ) {
       return NextResponse.redirect(new URL("/app/pick-organization", req.url));
