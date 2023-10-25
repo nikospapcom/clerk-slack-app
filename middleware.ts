@@ -1,4 +1,4 @@
-import { authMiddleware, clerkClient } from "@clerk/nextjs";
+import { authMiddleware } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 const publicRoutesThatShouldRedirectAfterAuth = ["/"];
@@ -19,15 +19,9 @@ export default authMiddleware({
       return NextResponse.redirect(new URL("/app", req.url));
     }
 
-    if (auth.userId) {
-      const user = await clerkClient.users.getUser(auth.userId);
-      console.log(user);
-    }
-
     if (
       !auth.orgId &&
-      req.nextUrl.pathname !== "/sign-in" &&
-      req.nextUrl.pathname !== "/sign-up" &&
+      req.nextUrl.pathname.includes("/app") &&
       req.nextUrl.pathname !== "/app/pick-organization"
     ) {
       return NextResponse.redirect(new URL("/app/pick-organization", req.url));
